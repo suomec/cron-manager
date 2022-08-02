@@ -1,0 +1,18 @@
+version: '3'
+
+networks:
+  suomec-cron-manager-network:
+    driver: bridge
+
+services:
+  suomec-cron-manager-php74:
+    container_name: suomec-cron-manager-php74
+    build:
+      context: ./var/docker/php
+      dockerfile: Dockerfile
+    working_dir: /var/www/application
+    volumes:
+      - .:/var/www/application
+      - ./var/docker/php/php.ini:/usr/local/etc/php/php.ini
+    networks:
+      - suomec-cron-manager-network

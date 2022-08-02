@@ -1,0 +1,22 @@
+{
+  "name": "suomec/cron-manager",
+  "type": "project",
+  "config": {
+    "vendor-dir": "var/vendor"
+  },
+  "repositories": [],
+  "require": {
+    "php": ">=7.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "CronManager\\": "src",
+      "CronManager\\Tests\\": "tests"
+    }
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^1.8",
+    "friendsofphp/php-cs-fixer": "^3.9",
+    "phpunit/phpunit": "^9.5"
+  }
+}

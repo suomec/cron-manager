@@ -1,0 +1,5 @@
+/.idea/
+TODO
+/var/vendor/
+composer.phar
+composer.lock
