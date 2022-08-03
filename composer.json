@@ -1,13 +1,15 @@
 {
   "name": "suomec/cron-manager",
-  "type": "project",
+  "type": "library",
   "config": {
     "vendor-dir": "var/vendor"
   },
   "repositories": [],
   "require": {
-    "php": ">=7.4"
+    "php": ">=7.4",
+    "ext-json": "*"
   },
+  "bin": "bin/php-crontab-install",
   "autoload": {
     "psr-4": {
       "CronManager\\": "src",

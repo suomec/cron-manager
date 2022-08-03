@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace CronManager\Tests\Parsers;
 
-use CronManager\Exceptions\MinuteExceedsMaximumException;
-use CronManager\Parsers\EveryNMinutes;
-use CronManager\Tests\TestCase;
+use CronManager\Exceptions\MinuteIncorrectException;
+use CronManager\Parsers\EveryNMinutesParser;
+use CronManager\Tests\Core\TestCase;
 
 class EveryNMinutesTest extends TestCase
 {
@@ -15,7 +15,7 @@ class EveryNMinutesTest extends TestCase
      */
     public function testSuccess(string $in, string $out): void
     {
-        $parser = new EveryNMinutes();
+        $parser = new EveryNMinutesParser();
 
         $result = $parser->parse($in);
 
@@ -24,9 +24,10 @@ class EveryNMinutesTest extends TestCase
 
     public function testFailsWhenMinuteTooBig(): void
     {
-        $this->expectException(MinuteExceedsMaximumException::class);
+        $this->expectException(MinuteIncorrectException::class);
+        $this->expectExceptionMessage("minute more than 59");
 
-        (new EveryNMinutes())->parse('every 66 minute');
+        (new EveryNMinutesParser())->parse('every 66 minute');
     }
 
     /**

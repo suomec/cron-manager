@@ -7,7 +7,7 @@ namespace CronManager\Parsers;
 /**
  * Template: `every N minute`
  */
-class EveryNMinutes extends BaseParser
+class EveryNMinutesParser extends Base
 {
     public function parse(string $raw): ?string
     {

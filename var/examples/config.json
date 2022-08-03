@@ -1,0 +1,36 @@
+{
+  "name": "Cron tasks for some project",
+  "key": "unique key",
+  "stages": [
+    {
+      "name": "production",
+      "variables": {
+        "argument": "production-argument",
+        "base_dir": "/var/www/production"
+      }
+    },
+    {
+      "name": "testing",
+      "variables": {
+        "argument": "testing-argument",
+        "base_dir": "/var/www/testing"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "name": "first task",
+      "is_enabled" : true,
+      "stages": ["production", "testing"],
+      "schedule": "every 15 minutes",
+      "command": "cd {base_dir} && ./run/command {key}"
+    },
+    {
+      "name": "second task",
+      "is_enabled": false,
+      "stages": ["testing"],
+      "schedule": "every 10 minutes",
+      "command": "cd {base_dir} && ./run/command {key}"
+    }
+  ]
+}

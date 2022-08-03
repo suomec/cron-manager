@@ -1,0 +1,37 @@
+#!/usr/bin/env php
+<?php
+
+error_reporting(-1);
+
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+
+$autoload = __DIR__ . '/../var/vendor/autoload.php';
+if (!file_exists($autoload)) {
+    echo "Can't find file: `{$autoload}` (composer.phar install)\n";
+    exit(1);
+}
+
+require_once $autoload;
+
+use CronManager\Tools\ExecutorReal;
+use CronManager\Installers\Unix;
+use CronManager\Integrations\Installer;
+use CronManager\Integrations\Reader;
+use CronManager\Integrations\Generator;
+
+if (!isset($argv[1]) || !is_string($argv[1])) {
+    echo "Pass first parameter: path to config file\n";
+    exit(1);
+}
+
+$config = Reader::readConfig($argv[1]);
+
+if (!isset($argv[2]) || !is_string($argv[2])) {
+    echo "Pass second parameter: stage name\n";
+    exit(1);
+}
+
+$crontab = Generator::generateCrontab($config, $argv[2]);
+
+Installer::install($crontab, new Unix(new ExecutorReal()));
