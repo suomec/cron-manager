@@ -1,6 +1,8 @@
 {
   "name": "suomec/cron-manager",
+  "description": "Crontab generator and installer from configuration files",
   "type": "library",
+  "license": "MIT",
   "config": {
     "vendor-dir": "var/vendor"
   },

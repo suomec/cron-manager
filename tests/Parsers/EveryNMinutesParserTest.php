@@ -8,7 +8,7 @@ use CronManager\Exceptions\MinuteIncorrectException;
 use CronManager\Parsers\EveryNMinutesParser;
 use CronManager\Tests\Core\TestCase;
 
-class EveryNMinutesTest extends TestCase
+class EveryNMinutesParserTest extends TestCase
 {
     /**
      * @dataProvider providerSuccess

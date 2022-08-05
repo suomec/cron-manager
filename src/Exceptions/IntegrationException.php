@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CronManager\Exceptions;
 
-class ConfigValidatorException extends \Exception
+class IntegrationException extends \Exception
 {
     //@phpstan-ignore-next-line
     public function __construct($message, $code = 0, $previous = null)

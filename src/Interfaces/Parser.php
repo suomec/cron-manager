@@ -9,5 +9,10 @@ namespace CronManager\Interfaces;
  */
 interface Parser
 {
+    /**
+     * Replaces human-readable phrase to crontab star-config
+     * @param string $raw Phrase
+     * @return string|null Config or null if it can't be applied
+     */
     public function parse(string $raw): ?string;
 }

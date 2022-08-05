@@ -13,10 +13,6 @@ class ExecutorReal implements Executor
     {
         exec($command, $out, $code);
 
-        $result = new ExecutorResult();
-        $result->output = $out;
-        $result->code = $code;
-
-        return $result;
+        return new ExecutorResult($out, $code);
     }
 }
