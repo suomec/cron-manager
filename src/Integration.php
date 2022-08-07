@@ -12,7 +12,11 @@ use CronManager\Objects\ConfigStage;
 use CronManager\Objects\ConfigTask;
 use CronManager\Objects\Crontab;
 use CronManager\Objects\CrontabLine;
+use CronManager\Parsers\EveryDayAtSpecificTimeParser;
+use CronManager\Parsers\EveryHourAtNthMinuteParser;
+use CronManager\Parsers\EveryMinuteParser;
 use CronManager\Parsers\EveryNMinutesParser;
+use CronManager\Parsers\RawParser;
 use CronManager\Readers\Json;
 
 class Integration
@@ -20,11 +24,24 @@ class Integration
     /** @var Parser[] */
     private array $parsers;
 
-    public function __construct()
+    /**
+     * @param Parser[]|null $overrideParsers Replace for default parsers list
+     */
+    public function __construct(?array $overrideParsers = null)
     {
-        $this->parsers = [
-            new EveryNMinutesParser(),
-        ];
+        if (is_array($overrideParsers)) {
+            $parsers = $overrideParsers;
+        } else {
+            $parsers = [
+                new EveryDayAtSpecificTimeParser(),
+                new EveryHourAtNthMinuteParser(),
+                new EveryMinuteParser(),
+                new EveryNMinutesParser(),
+                new RawParser(),
+            ];
+        }
+
+        $this->parsers = $parsers;
     }
 
     // main method
@@ -226,13 +243,5 @@ class Integration
         }
 
         $os->setCrontab($toInstall);
-    }
-
-    /**
-     * @param Parser[] $parsers
-     */
-    public function setParsers(array $parsers): void
-    {
-        $this->parsers = $parsers;
     }
 }

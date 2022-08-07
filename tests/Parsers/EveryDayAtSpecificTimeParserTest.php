@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace CronManager\Tests\Parsers;
 
+use CronManager\Exceptions\HourIncorrectException;
 use CronManager\Exceptions\MinuteIncorrectException;
-use CronManager\Parsers\EveryNMinutesParser;
+use CronManager\Parsers\EveryDayAtSpecificTimeParser;
 use CronManager\Tests\Core\TestCase;
 
-class EveryNMinutesParserTest extends TestCase
+class EveryDayAtSpecificTimeParserTest extends TestCase
 {
     /**
      * @dataProvider providerSuccess
      */
     public function testSuccess(string $in, string $out): void
     {
-        $parser = new EveryNMinutesParser();
+        $parser = new EveryDayAtSpecificTimeParser();
 
         $result = $parser->parse($in);
 
@@ -30,7 +31,7 @@ class EveryNMinutesParserTest extends TestCase
         $this->expectException($exceptionClass);// @phpstan-ignore-line
         $this->expectExceptionMessage($exceptionMessage);
 
-        (new EveryNMinutesParser())->parse($in);
+        (new EveryDayAtSpecificTimeParser())->parse($in);
     }
 
     /**
@@ -39,9 +40,10 @@ class EveryNMinutesParserTest extends TestCase
     public function providerSuccess(): array
     {
         return [
-            ['every 1 minute', '*/1 * * * *'],
-            ['every 5 minutes', '*/5 * * * *'],
-            ['every 10 minutes', '*/10 * * * *'],
+            ['every day at 02:03', '3 2 * * *'],
+            ['every day at 12:10', '10 12 * * *'],
+            ['every day at 4:45', '45 4 * * *'],
+            ['every day at 0:00', '0 0 * * *'],
         ];
     }
 
@@ -51,8 +53,8 @@ class EveryNMinutesParserTest extends TestCase
     public function providerFails(): array
     {
         return [
-            ['every 66 minute', MinuteIncorrectException::class, 'minute more than 59'],
-            ['every 0 minute', MinuteIncorrectException::class, 'minute is zero'],
+            ['every day at 45:22', HourIncorrectException::class, 'hour more than 23'],
+            ['every day at 22:66', MinuteIncorrectException::class, 'minute more than 59'],
         ];
     }
 }

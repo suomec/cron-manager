@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CronManager\Parsers;
 
+use CronManager\Exceptions\HourIncorrectException;
 use CronManager\Exceptions\MinuteIncorrectException;
 use CronManager\Interfaces\Parser;
 
@@ -20,6 +21,20 @@ abstract class Base implements Parser
 
         if ($minute > 59) {
             throw new MinuteIncorrectException("minute more than 59");
+        }
+    }
+
+    /**
+     * @throws HourIncorrectException
+     */
+    protected function checkHour(int $hour): void
+    {
+        if ($hour < 0) {
+            throw new HourIncorrectException("hour less than 0");
+        }
+
+        if ($hour > 23) {
+            throw new HourIncorrectException("hour more than 23");
         }
     }
 }

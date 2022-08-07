@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace CronManager\Tests\Parsers;
 
 use CronManager\Exceptions\MinuteIncorrectException;
-use CronManager\Parsers\EveryNMinutesParser;
+use CronManager\Parsers\EveryHourAtNthMinuteParser;
 use CronManager\Tests\Core\TestCase;
 
-class EveryNMinutesParserTest extends TestCase
+class EveryHourAtNthMinuteParserTest extends TestCase
 {
     /**
      * @dataProvider providerSuccess
      */
     public function testSuccess(string $in, string $out): void
     {
-        $parser = new EveryNMinutesParser();
+        $parser = new EveryHourAtNthMinuteParser();
 
         $result = $parser->parse($in);
 
@@ -30,7 +30,7 @@ class EveryNMinutesParserTest extends TestCase
         $this->expectException($exceptionClass);// @phpstan-ignore-line
         $this->expectExceptionMessage($exceptionMessage);
 
-        (new EveryNMinutesParser())->parse($in);
+        (new EveryHourAtNthMinuteParser())->parse($in);
     }
 
     /**
@@ -39,9 +39,11 @@ class EveryNMinutesParserTest extends TestCase
     public function providerSuccess(): array
     {
         return [
-            ['every 1 minute', '*/1 * * * *'],
-            ['every 5 minutes', '*/5 * * * *'],
-            ['every 10 minutes', '*/10 * * * *'],
+            ['every hour at 1 minute', '1 * * * *'],
+            ['every hour at 2nd minute', '2 * * * *'],
+            ['every hour at 20th minute', '20 * * * *'],
+            ['every hour at 10 minute', '10 * * * *'],
+            ['every hour at 5 minutes', '5 * * * *'],
         ];
     }
 
@@ -51,8 +53,8 @@ class EveryNMinutesParserTest extends TestCase
     public function providerFails(): array
     {
         return [
-            ['every 66 minute', MinuteIncorrectException::class, 'minute more than 59'],
-            ['every 0 minute', MinuteIncorrectException::class, 'minute is zero'],
+            ['every hour at 666 minute', MinuteIncorrectException::class, 'minute more than 59'],
+            ['every hour at 0 minute', MinuteIncorrectException::class, 'minute is zero'],
         ];
     }
 }

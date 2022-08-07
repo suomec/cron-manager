@@ -7,13 +7,13 @@ namespace CronManager\Parsers;
 use CronManager\Exceptions\MinuteIncorrectException;
 
 /**
- * Template: `every N minute`
+ * Template: `every hour at Nth minute`
  */
-class EveryNMinutesParser extends Base
+class EveryHourAtNthMinuteParser extends Base
 {
     public function parse(string $raw): ?string
     {
-        preg_match("|every (\d+) minutes?|", $raw, $matches);
+        preg_match("!every hour at (\d+)(th|nd)? minutes?!", $raw, $matches);
 
         if (!isset($matches[1])) {
             return null;
@@ -26,6 +26,6 @@ class EveryNMinutesParser extends Base
             throw new MinuteIncorrectException("minute is zero");
         }
 
-        return sprintf('*/%d * * * *', $minute);
+        return sprintf('%d * * * *', $minute);
     }
 }

@@ -111,8 +111,7 @@ class IntegrationTest extends TestCase
 
     public function testApplyParsersFailsIfNoParsersMatched(): void
     {
-        $i = new Integration();
-        $i->setParsers([]);
+        $i = new Integration([]);
 
         $this->expectException(IntegrationException::class);
         $this->expectExceptionMessage("can't parse expression `SCHEDULE`");
@@ -131,8 +130,7 @@ class IntegrationTest extends TestCase
             return 'NEW';
         });
 
-        $i = new Integration();
-        $i->setParsers([$parser]);
+        $i = new Integration([$parser]);
 
         $line = $i->applyParsers(
             new ConfigTask('NAME', true, [], '  TaSK  SCHEDULE  ', 'COMMAND {k1} {k2} {k1}'),
@@ -153,8 +151,7 @@ class IntegrationTest extends TestCase
         $parser = $this->createMock(Parser::class);
         $parser->method('parse')->willReturn('PARSED');
 
-        $i = new Integration();
-        $i->setParsers([$parser]);
+        $i = new Integration([$parser]);
 
         $crontab = $i->generateCrontab(new Config('name', 'key', [
             new ConfigStage('stage', []),
