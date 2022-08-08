@@ -23,14 +23,14 @@
       "is_enabled" : true,
       "stages": ["production", "testing"],
       "schedule": "every 15 minutes",
-      "command": "cd {base_dir} && ./run/command {key}"
+      "command": "cd {base_dir} && ./run/command {argument}"
     },
     {
       "name": "second task",
       "is_enabled": false,
       "stages": ["testing"],
       "schedule": "every 10 minutes",
-      "command": "cd {base_dir} && ./run/command {key}"
+      "command": "cd {base_dir} && ./run/command {argument}"
     }
   ]
 }
