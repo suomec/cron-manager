@@ -41,6 +41,8 @@ class Unix implements Os
      */
     public function getCrontab(): array
     {
+        $this->isCrontabExists();
+
         $result = $this->executor->exec(sprintf('%s -l 2>&1', self::COMMAND));
 
         $tmp = implode("\n", $result->getOutput());
@@ -60,6 +62,8 @@ class Unix implements Os
      */
     public function setCrontab(array $lines): void
     {
+        $this->isCrontabExists();
+
         $tmp = tempnam(sys_get_temp_dir(), 'php-cron-generator');
         if (!is_string($tmp)) {
             throw new OsException("can't create tmp name");
@@ -73,6 +77,19 @@ class Unix implements Os
 
         if ($result->getCode() !== 0) {
             throw new OsException('command exited with non zero code: ' . implode("\n", $result->getOutput()));
+        }
+    }
+
+    /**
+     * Fails if crontab command not found
+     * @return void
+     */
+    private function isCrontabExists(): void
+    {
+        $result = $this->executor->exec(sprintf("command -v %s", self::COMMAND));
+
+        if ($result->getCode() !== 0) {
+            throw new OsException("crontab command is not accessible");
         }
     }
 }

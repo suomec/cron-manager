@@ -1,0 +1,46 @@
+#!/usr/bin/env php
+<?php
+
+$buildPath = 'bin/build.phar';
+@unlink($buildPath);
+
+try
+{
+    $baseDir = dirname(realpath(__DIR__ . '/../LICENSE'));
+    $phar = new \Phar($buildPath);
+    $phar->startBuffering();
+
+    addDir($phar, $baseDir, 'src/');
+    addDir($phar, $baseDir, 'bin/');
+    addDir($phar, $baseDir, 'var/vendor/composer/');
+    $phar->addFile(__DIR__ . '/../var/vendor/autoload.php', '/var/www/application/var/vendor/autoload.php');
+
+    $defaultStub = $phar->createDefaultStub('/var/www/application/bin/php-crontab-install.php');
+    $phar->setStub("#!/usr/bin/env php\n" . $defaultStub);
+
+    $phar->stopBuffering();
+    chmod($buildPath, 0777);
+} catch (\Exception $e) {
+    echo "Build: {$buildPath} failed\n";
+    exit(1);
+}
+
+echo "Build: {$buildPath} success\n";
+exit();
+
+function addDir(\Phar $phar, string $basePhyDir, string $virtualDir) {
+    $files = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($basePhyDir . '/' . $virtualDir),
+        RecursiveIteratorIterator::SELF_FIRST,
+    );
+    
+    /** @var SplFileInfo $file */
+    foreach($files as $file){
+        if ($file->isDir()) {
+            continue;
+        }
+
+        $rp = $file->getRealPath();
+        $phar->addFile($rp, '/var/www/application'. str_replace($basePhyDir, '', $rp));
+    }
+}

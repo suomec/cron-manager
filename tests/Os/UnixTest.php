@@ -15,7 +15,7 @@ class UnixTest extends TestCase
     public function testInstallerUnixGetSuccessIfNoCrontabForUser(): void
     {
         $exec = $this->createMock(Executor::class);
-        $exec->method('exec')->willReturn(new ExecutorResult([], 0));
+        $exec->method('exec')->willReturn(new ExecutorResult([], 0), new ExecutorResult([], 0));
 
         $unix = new Unix($exec);
         $result = $unix->getCrontab();
@@ -26,7 +26,7 @@ class UnixTest extends TestCase
     public function testInstallerUnixGetFailsIfExitCodeNotZero(): void
     {
         $exec = $this->createMock(Executor::class);
-        $exec->method('exec')->willReturn(new ExecutorResult([], 100));
+        $exec->method('exec')->willReturn(new ExecutorResult([], 0), new ExecutorResult([], 100));
 
         $unix = new Unix($exec);
 
@@ -38,7 +38,7 @@ class UnixTest extends TestCase
     public function testInstallerUnixGetSuccessForNotEmptyCrontab(): void
     {
         $exec = $this->createMock(Executor::class);
-        $exec->method('exec')->willReturn(new ExecutorResult([
+        $exec->method('exec')->willReturn(new ExecutorResult([], 0), new ExecutorResult([
             '123', '234', '345',
         ], 0));
 
