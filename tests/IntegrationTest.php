@@ -170,4 +170,49 @@ class IntegrationTest extends TestCase
         $this->assertStringContainsString('CT1', $lines[0]->getComment());
         $this->assertStringContainsString('PARSED', $lines[0]->getCommand());
     }
+
+    public function testAllParsersAreInConstructor(): void
+    {
+        $object = new Integration();
+
+        $r = new \ReflectionObject($object);
+        $prop = $r->getProperty('parsers');
+        $prop->setAccessible(true);
+
+        /** @var Parser[] $tmp */
+        $tmp = $prop->getValue($object);
+
+        $parsers = [];
+        foreach ($tmp as $class) {
+            $parsers[] = get_class($class);
+        }
+
+        $files = glob(__DIR__ . '/../src/Parsers/*Parser.php');
+        if (!is_array($files)) {
+            throw new \Exception("can't get parsers files list");
+        }
+
+        foreach ($files as $file) {
+            $realpath = realpath($file);
+            if (!is_string($realpath)) {
+                throw new \Exception("can't get realpath for {$file}");
+            }
+
+            $name = str_replace('.php', '', basename($realpath));
+
+            $isUsed = false;
+            foreach ($parsers as $parser) {
+                if (strpos($parser, $name) !== false) {
+                    $isUsed = true;
+                    break;
+                }
+            }
+
+            if (!$isUsed) {
+                $this->fail("Parser {$name} not used in Integration constructor");
+            }
+        }
+
+        $this->assertTrue(true);
+    }
 }

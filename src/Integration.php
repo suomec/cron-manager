@@ -170,19 +170,13 @@ class Integration
             return $stages[0];
         }
 
-        $filteredStages = array_filter($stages, function (ConfigStage $s) use ($stageName) {
-            if ($s->getName() === $stageName) {
-                return true;
+        foreach ($stages as $stage) {
+            if ($stage->getName() === $stageName) {
+                return $stage;
             }
-
-            return false;
-        });
-
-        if (count($filteredStages) === 0) {
-            throw new IntegrationException("stage not found: {$stageName}");
         }
 
-        return array_values($filteredStages)[0];
+        throw new IntegrationException("stage not found: {$stageName}");
     }
 
     /**
