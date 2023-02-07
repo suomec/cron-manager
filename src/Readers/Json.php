@@ -51,7 +51,7 @@ class Json implements Reader
                 $task['stages'],
                 $task['schedule'],
                 $task['command'],
-                $task['parallel'] ?? [],
+                $task['parallel'] ?? []
             );
         }
 
