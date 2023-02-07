@@ -15,6 +15,8 @@ use CronManager\Objects\CrontabLine;
 use CronManager\Parsers\EveryDayAtSpecificTimeParser;
 use CronManager\Parsers\EveryHourAtNthMinuteParser;
 use CronManager\Parsers\EveryMinuteParser;
+use CronManager\Parsers\EveryNDaysParser;
+use CronManager\Parsers\EveryNHoursParser;
 use CronManager\Parsers\EveryNMinutesParser;
 use CronManager\Parsers\RawParser;
 use CronManager\Readers\Json;
@@ -36,6 +38,8 @@ class Integration
                 new EveryDayAtSpecificTimeParser(),
                 new EveryHourAtNthMinuteParser(),
                 new EveryMinuteParser(),
+                new EveryNDaysParser(),
+                new EveryNHoursParser(),
                 new EveryNMinutesParser(),
                 new RawParser(),
             ];

@@ -7,6 +7,8 @@ bound to list of stages and has human-readable schedule format, for example:
 * Every hour at 10th minute → `10 * * * *`
 * Every minute → `* * * * *`
 * Every 6 minutes → `*/6 * * * *`
+* Every 6 hours → `0 */6 * * *`
+* Every 3 days → `0 0 */3 * *`
 * Or raw expression `raw:* * */2 */2 *` → `* * */2 */2 *`
 
 # Example of config (/var/examples/config.json)
@@ -14,7 +16,7 @@ bound to list of stages and has human-readable schedule format, for example:
 ```json
 {
   "name": "Cron tasks for some project",
-  "key": "unique key",
+  "key": "unique key (should not be changed after was set)",
   "stages": [
     {
       "name": "production",
@@ -54,13 +56,13 @@ If you run command ```cron-manager.phar /path/to/config testing```. Where `testi
 part of config next crontab will be installed:
 
 ```text
-### Cron tasks for some project (f96162a8606d41ed8c54f309e85560a4) DO NOT EDIT
+### Cron tasks for some project (f96162a86...HASH-FROM-UNIQUE-KEY) DO NOT EDIT
 # first task
 */15 * * * * cd /var/www/testing && ./run/command testing-argument
-### FINISH f96162a8606d41ed8c54f309e85560a4 DO NOT EDIT
+### FINISH f96162a86...HASH-FROM-UNIQUE-KEY DO NOT EDIT
 ```
 
-Hash ``f96162a8606d41ed8c54f309e85560a4`` is the md5() from `key`. Second command is disabled.
+Hash ``f96162a86...`` is the md5() from `key`. Second command is disabled.
 
 # Schedule formats
 
