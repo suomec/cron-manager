@@ -93,6 +93,18 @@ class Integration
             throw new IntegrationException("stages keys sets are different");
         }
 
+        // reserved variables names
+        $reservedVariablesNames = ['parallel'];
+        $reservedVariablesNamesStr = implode(', ', $reservedVariablesNames);
+        foreach ($config->getStages() as $stage) {
+            $stageVarsNames = array_keys($stage->getVariables());
+            if (array_intersect($reservedVariablesNames, $stageVarsNames) !== []) {
+                throw new IntegrationException(
+                    "stages keys sets contains reserved variables names: {$reservedVariablesNamesStr}"
+                );
+            }
+        }
+
         return $config;
     }
 
@@ -117,7 +129,7 @@ class Integration
                 continue;
             }
 
-            $lines[] = $this->applyParsers($task, $userStage);
+            $lines = array_merge($lines, $this->applyParsers($task, $userStage));
         }
 
         return new Crontab($config->getName(), $config->getKey(), $lines);
@@ -127,9 +139,9 @@ class Integration
      * Check every parser for task schedule description
      * @param ConfigTask $task
      * @param ConfigStage $stage
-     * @return CrontabLine
+     * @return CrontabLine[]
      */
-    public function applyParsers(ConfigTask $task, ConfigStage $stage): CrontabLine
+    public function applyParsers(ConfigTask $task, ConfigStage $stage): array
     {
         $rawSchedule = trim($task->getSchedule());
         $rawSchedule = preg_replace('|\s+|', ' ', $rawSchedule);
@@ -157,7 +169,24 @@ class Integration
             $command = str_replace('{' . $k . '}', $v, $command);
         }
 
-        return new CrontabLine($task->getName(), sprintf('%s %s', $schedule, $command));
+        if (count($task->getParallel()) === 0) {
+            return [new CrontabLine($task->getName(), sprintf('%s %s', $schedule, $command))];
+        }
+
+        // parallel - multiple lines from one command
+        $lines = [];
+        foreach ($task->getParallel() as $arg) {
+            if (strpos($command, '{parallel}') === false) {
+                throw new IntegrationException("command `{$command}` should contain {parallel} substring");
+            }
+
+            $tmp = $command;
+            $tmp = str_replace('{parallel}', $arg, $tmp);
+
+            $lines[] = new CrontabLine($task->getName(), sprintf('%s %s', $schedule, $tmp));
+        }
+
+        return $lines;
     }
 
     /**

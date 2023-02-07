@@ -15,6 +15,9 @@ check:
 test:
 	./var/vendor/bin/phpunit --bootstrap=./tests/Core/bootstrap.php --colors=always ./
 
+filter-test:
+	./var/vendor/bin/phpunit --bootstrap=./tests/Core/bootstrap.php --colors=always ./  --filter "$(FILTER)"
+
 phar:
 	php composer.phar update -q && php composer.phar install --no-dev -q
 	./bin/php-crontab-make-phar

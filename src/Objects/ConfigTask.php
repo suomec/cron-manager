@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace CronManager\Objects;
 
+use CronManager\Exceptions\ConfigReadException;
+
 class ConfigTask
 {
     private string $name;
@@ -12,6 +14,8 @@ class ConfigTask
     private array $stagesNames;
     private string $schedule;
     private string $command;
+    /** @var string[] */
+    private array $parallel;
 
     /**
      * @param string $name
@@ -19,14 +23,28 @@ class ConfigTask
      * @param string[] $stagesNames
      * @param string $schedule
      * @param string $command
+     * @param string[] $parallel
      */
-    public function __construct(string $name, bool $isEnabled, array $stagesNames, string $schedule, string $command)
-    {
+    public function __construct(
+        string $name,
+        bool $isEnabled,
+        array $stagesNames,
+        string $schedule,
+        string $command,
+        array $parallel
+    ) {
         $this->name = $name;
         $this->isEnabled = $isEnabled;
         $this->stagesNames = $stagesNames;
         $this->schedule = $schedule;
         $this->command = $command;
+
+        foreach ($parallel as $arg) {
+            if (!is_string($arg)) {
+                throw new ConfigReadException('every `parallel` argument should be string');
+            }
+        }
+        $this->parallel = $parallel;
     }
 
     public function getName(): string
@@ -55,5 +73,13 @@ class ConfigTask
     public function getCommand(): string
     {
         return $this->command;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getParallel(): array
+    {
+        return $this->parallel;
     }
 }

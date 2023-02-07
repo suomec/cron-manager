@@ -45,7 +45,14 @@ class Json implements Reader
 
         $tasks = [];
         foreach ($result['tasks'] as $task) {
-            $tasks[] = new ConfigTask($task['name'], $task['is_enabled'], $task['stages'], $task['schedule'], $task['command']);
+            $tasks[] = new ConfigTask(
+                $task['name'],
+                $task['is_enabled'],
+                $task['stages'],
+                $task['schedule'],
+                $task['command'],
+                $task['parallel'] ?? [],
+            );
         }
 
         return new Config($result['name'], $result['key'], $stages, $tasks);

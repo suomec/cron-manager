@@ -25,7 +25,7 @@ class IntegrationTest extends TestCase
         $config = new Config('', '', [
             new ConfigStage('known', []),
         ], [
-            new ConfigTask('', true, ['known', 'unknown'], '', ''),
+            new ConfigTask('', true, ['known', 'unknown'], '', '', []),
         ]);
 
         $this->expectException(IntegrationException::class);
@@ -116,7 +116,7 @@ class IntegrationTest extends TestCase
         $this->expectException(IntegrationException::class);
         $this->expectExceptionMessage("can't parse expression `SCHEDULE`");
         $i->applyParsers(
-            new ConfigTask('', true, [], 'SCHEDULE', ''),
+            new ConfigTask('', true, [], 'SCHEDULE', '', []),
             new ConfigStage('', []),
         );
     }
@@ -132,18 +132,44 @@ class IntegrationTest extends TestCase
 
         $i = new Integration([$parser]);
 
-        $line = $i->applyParsers(
-            new ConfigTask('NAME', true, [], '  TaSK  SCHEDULE  ', 'COMMAND {k1} {k2} {k1}'),
+        $lines = $i->applyParsers(
+            new ConfigTask('NAME', true, [], '  TaSK  SCHEDULE  ', 'COMMAND {k1} {k2} {k1}', []),
             new ConfigStage('', [
                 'k1' => 'v1',
                 'k2' => 'v2',
             ]),
         );
 
-        $this->assertEquals('NAME', $line->getComment());
-        $this->assertEquals('NEW COMMAND v1 v2 v1', $line->getCommand());
+        $this->assertEquals('NAME', $lines[0]->getComment());
+        $this->assertEquals('NEW COMMAND v1 v2 v1', $lines[0]->getCommand());
 
         $this->assertEquals('task schedule', self::$tmpString);
+    }
+
+    public function testApplyParsersSuccessWithParallelArguments(): void
+    {
+        $parser = $this->createMock(Parser::class);
+        $parser->method('parse')->willReturnCallback(function (string $in) {
+            self::$tmpString = $in;
+
+            return 'NEW';
+        });
+
+        $i = new Integration([$parser]);
+
+        $lines = $i->applyParsers(
+            new ConfigTask('NAME', true, [], '  TaSK  SCHEDULE  ', 'COMMAND {parallel}', [
+                'Arg1',
+                'Arg2'
+            ]),
+            new ConfigStage('', []),
+        );
+
+        $this->assertCount(2, $lines);
+        $this->assertEquals('NAME', $lines[0]->getComment());
+        $this->assertEquals('NEW COMMAND Arg1', $lines[0]->getCommand());
+        $this->assertEquals('NAME', $lines[1]->getComment());
+        $this->assertEquals('NEW COMMAND Arg2', $lines[1]->getCommand());
     }
 
     public function testGenerateCrontabSuccess(): void
@@ -156,9 +182,9 @@ class IntegrationTest extends TestCase
         $crontab = $i->generateCrontab(new Config('name', 'key', [
             new ConfigStage('stage', []),
         ], [
-            new ConfigTask('CT1', true, ['test', 'stage', 'third'], '', ''),
-            new ConfigTask('CT2', false, ['test', 'stage', 'third'], '', ''),// skip
-            new ConfigTask('CT3', true, ['test', 'second'], '', ''),// skip
+            new ConfigTask('CT1', true, ['test', 'stage', 'third'], '', '', []),
+            new ConfigTask('CT2', false, ['test', 'stage', 'third'], '', '', []),// skip
+            new ConfigTask('CT3', true, ['test', 'second'], '', '', []),// skip
         ]), 'stage');
 
         $lines = $crontab->getLines();

@@ -31,6 +31,14 @@
       "stages": ["testing"],
       "schedule": "every 10 minutes",
       "command": "cd {base_dir} && ./run/command {argument}"
+    },
+    {
+      "name": "third task",
+      "is_enabled": true,
+      "stages": ["testing"],
+      "schedule": "every 2 hours",
+      "parallel": ["Argument1", "Argument2", "Argument3"],
+      "command": "cd {base_dir} && ./run/command {parallel}"
     }
   ]
 }

@@ -47,6 +47,14 @@ bound to list of stages and has human-readable schedule format, for example:
       "stages": ["testing"],
       "schedule": "every 10 minutes",
       "command": "cd {base_dir} && ./run/command {argument}"
+    },
+    {
+      "name": "third task",
+      "is_enabled": true,
+      "stages": ["testing"],
+      "schedule": "every 2 hours",
+      "parallel": ["Argument1", "Argument2", "Argument3"],
+      "command": "cd {base_dir} && ./run/command {parallel}"
     }
   ]
 }
@@ -59,10 +67,19 @@ part of config next crontab will be installed:
 ### Cron tasks for some project (f96162a86...HASH-FROM-UNIQUE-KEY) DO NOT EDIT
 # first task
 */15 * * * * cd /var/www/testing && ./run/command testing-argument
+# third task
+0 */2 * * * cd /var/www/testing && ./run/command Argument1
+# third task
+0 */2 * * * cd /var/www/testing && ./run/command Argument2
+# third task
+0 */2 * * * cd /var/www/testing && ./run/command Argument3
 ### FINISH f96162a86...HASH-FROM-UNIQUE-KEY DO NOT EDIT
 ```
 
 Hash ``f96162a86...`` is the md5() from `key`. Second command is disabled.
+
+`parallel` is a special parameter, to transform command into several crontab-commands with different arguments
+described in parallel array. Every parallel value should be string. `{parallel}` is a reserved special argument
 
 # Schedule formats
 
